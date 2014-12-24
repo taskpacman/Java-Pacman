@@ -129,7 +129,7 @@ public class cmaze
 		int i,j;
 		int iDir;
 
-		g.setColor(Color.green);
+		g.setColor(Color.blue);
 
 		for (i=0; i<HEIGHT; i++)
 		{
