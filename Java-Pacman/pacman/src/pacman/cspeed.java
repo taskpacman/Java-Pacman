@@ -3,59 +3,54 @@ package pacman;
 
 /**
  * speed control
- * 
+ * <p/>
  * use init(s,f) to set the frame/step ratio
  * NOTE: s must <= f
  * call start() to reset counters
  * call isMove per frame to see if step are to be taken
  */
-public class cspeed
-{
-	// move steps per frames
-	int steps;
-	int frames;
+public class cspeed {
+    // move steps per frames
+    int steps;
+    int frames;
 
-	int frameCount;
-	int stepCount;
+    int frameCount;
+    int stepCount;
 
-	float frameStepRatio;
+    float frameStepRatio;
 
-	cspeed()
-	{
-		start(1,1);
-	}
+    cspeed() {
+        start(1, 1);
+    }
 
-	public void start(int s, int f)
-	throws Error
-	{
-		if (f<s)
-			throw new Error("Cspeed.init(...): frame must >= step");
+    public void start(int s, int f)
+            throws Error {
+        if (f < s)
+            throw new Error("Cspeed.init(...): frame must >= step");
 
-		steps=s;
-		frames=f;
-		frameStepRatio=(float)frames/(float)steps;
+        steps = s;
+        frames = f;
+        frameStepRatio = (float) frames / (float) steps;
 
-		stepCount=steps;
-		frameCount=frames;
-	}
+        stepCount = steps;
+        frameCount = frames;
+    }
 
-	// return 1 if move, 0 not move
-	public int isMove()	
-	{
-		frameCount--;
+    // return 1 if move, 0 not move
+    public int isMove() {
+        frameCount--;
 
-		float ratio=(float)frameCount/(float)stepCount;
+        float ratio = (float) frameCount / (float) stepCount;
 
-		if (frameCount==0)
-			frameCount=frames;
+        if (frameCount == 0)
+            frameCount = frames;
 
-		if (ratio < frameStepRatio)
-		{
-			stepCount--;
-			if (stepCount==0)
-				stepCount=steps;
-			return(1);		
-		}
-		return(0);
-	}
+        if (ratio < frameStepRatio) {
+            stepCount--;
+            if (stepCount == 0)
+                stepCount = steps;
+            return (1);
+        }
+        return (0);
+    }
 }

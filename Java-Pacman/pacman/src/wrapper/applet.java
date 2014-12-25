@@ -25,9 +25,7 @@ import java.awt.event.*;
 
 import pacman.cpcman;
 
-/**
- * a java applet class for pacman
- */
+
 public class applet extends Applet
 implements ActionListener
 {
