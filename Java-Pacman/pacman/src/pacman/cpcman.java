@@ -108,9 +108,6 @@ public class cpcman extends Frame
         setSize(canvasWidth, canvasHeight);
 
         show();
-
-        // System.out.println("cpcman done");
-
     }
 
     void initGUI()
@@ -126,7 +123,6 @@ public class cpcman extends Frame
 
         addNotify();  // for updated inset information
 
-        // System.out.println("initGUI done.");
     }
 
     public void initImages()

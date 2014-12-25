@@ -1,6 +1,9 @@
 package pacman;
 
+import jdk.nashorn.internal.objects.Global;
+
 import java.awt.*;
+import java.util.Random;
 
 /* define the maze */
 public class cmaze
@@ -51,6 +54,33 @@ public class cmaze
 
 	public void start()
 	{
+		int n = 10;
+		Random generator = new Random();
+		//int level = 4;
+		int level = generator.nextInt(7)+1;
+		switch (level) {
+			case 1:
+				ctables.MazeDefine = ctables.MazeDefine_lvl1;
+				break;
+			case 2:
+				ctables.MazeDefine = ctables.MazeDefine_lvl2;
+				break;
+			case 3:
+				ctables.MazeDefine = ctables.MazeDefine_lvl5;
+				break;
+			case 4:
+				ctables.MazeDefine = ctables.MazeDefine_lvl6;
+				break;
+			case 5:
+				ctables.MazeDefine = ctables.MazeDefine_lvl7;
+				break;
+			case 6:
+				ctables.MazeDefine = ctables.MazeDefine_lvl8;
+				break;
+			case 7:
+				ctables.MazeDefine = ctables.MazeDefine_lvl9;
+				break;
+		}
 		int i,j,k;
 		iTotalDotcount=0;
 		for (i=0; i<HEIGHT; i++)

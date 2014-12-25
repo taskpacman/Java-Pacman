@@ -30,7 +30,6 @@ public class app
 	public static void main (String[] args) 
 	{
 		game = new cpcman();
-		//		System.out.println("main done.");
 	}
 }
 
