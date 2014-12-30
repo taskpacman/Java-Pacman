@@ -2,10 +2,9 @@
 package pacman;
 
 /**
- * the tables are used to speed up computation
+ * уровни
  */
 public class ctables {
-    // for direction computation
     public static final int[] iXDirection = {1, 0, -1, 0};
     public static final int[] iYDirection = {0, -1, 0, 1};
     public static final int[] iDirection =

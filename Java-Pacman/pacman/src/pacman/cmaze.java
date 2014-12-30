@@ -1,13 +1,11 @@
 package pacman;
 
-import jdk.nashorn.internal.objects.Global;
-
 import java.awt.*;
 import java.util.Random;
 
-/* define the maze */
+/* построить лабиринт */
 public class cmaze {
-    // constant definitions
+    // константы
     static final int BLANK = 0;
     static final int WALL = 1;
     static final int DOOR = 2;
@@ -20,40 +18,37 @@ public class cmaze {
     static final int iHeight = HEIGHT * 16;
     static final int iWidth = WIDTH * 16;
 
-    // the applet the object associate with
     Window applet;
-    // the graphics it will be using
     Graphics graphics;
 
-    // the maze image
+    // изобрадение лабиринта
     Image imageMaze;
 
-    // the dot image
+    // изображение точки
     Image imageDot;
 
-    // total dots left
+    // сколько всего точек
     int iTotalDotcount;
 
-    // the status of maze
+    // статус лабиринта
     int[][] iMaze;
 
-    // initialize the maze
+    // инициализация лабиринта
     cmaze(Window a, Graphics g) {
-        // setup associations
+        // установка ассоциаций
         applet = a;
         graphics = g;
 
         imageMaze = applet.createImage(iWidth, iHeight);
         imageDot = applet.createImage(2, 2);
 
-        // create data
+        // задаем длину/ширину
         iMaze = new int[HEIGHT][WIDTH];
     }
 
     public void start() {
-        int n = 10;
         Random generator = new Random();
-        //int level = 7;
+        //выбор уровня
         int level = generator.nextInt(7) + 1;
         switch (level) {
             case 1:
@@ -106,7 +101,7 @@ public class cmaze {
                 }
                 iMaze[i][j] = k;
             }
-        // create initial maze image
+        //создать изображение лабиринта
         createImage();
     }
 
@@ -115,7 +110,7 @@ public class cmaze {
         drawDots();
     }
 
-    void drawDots()    // on the offscreen
+    void drawDots()
     {
         int i, j;
 
@@ -127,13 +122,13 @@ public class cmaze {
     }
 
     void createImage() {
-        // create the image of a dot
+        // создаем изображение точнки
         cimage.drawDot(imageDot);
 
-        // create the image of the maze
+        // создаем изображение лабиринта
         Graphics gmaze = imageMaze.getGraphics();
 
-        // background
+        // фон
         gmaze.setColor(Color.black);
         gmaze.fillRect(0, 0, iWidth, iHeight);
 
@@ -191,6 +186,7 @@ public class cmaze {
         }
     }
 
+    //рисование границ
     void DrawBoundary(Graphics g, int col, int row, int iDir) {
         int x, y;
 
@@ -199,13 +195,9 @@ public class cmaze {
 
         switch (iDir) {
             case ctables.LEFT:
-                // draw lower half segment
                 if (iMaze[row + 1][col] != WALL)
-                    // down empty
                     if (iMaze[row + 1][col - 1] != WALL)
-                    // left-down empty
                     {
-                        //arc(x-8,y+8,270,0,6);
                         g.drawArc(x - 8 - 6, y + 8 - 6, 12, 12, 270, 100);
                     } else {
                         g.drawLine(x - 2, y + 8, x - 2, y + 16);
@@ -215,13 +207,9 @@ public class cmaze {
                     g.drawLine(x - 2, y + 17, x + 7, y + 17);
                 }
 
-                // Draw upper half segment
                 if (iMaze[row - 1][col] != WALL)
-                    // upper empty
                     if (iMaze[row - 1][col - 1] != WALL)
-                    // upper-left empty
                     {
-                        //						arc(x-8,y+7,0,90,6);
                         g.drawArc(x - 8 - 6, y + 7 - 6, 12, 12, 0, 100);
                     } else {
                         g.drawLine(x - 2, y, x - 2, y + 7);
@@ -233,13 +221,9 @@ public class cmaze {
                 break;
 
             case ctables.RIGHT:
-                // draw lower half segment
                 if (iMaze[row + 1][col] != WALL)
-                    // down empty
                     if (iMaze[row + 1][col + 1] != WALL)
-                    // down-right empty
                     {
-                        //						arc(x+16+7,y+8,180,270,6);
                         g.drawArc(x + 16 + 7 - 6, y + 8 - 6, 12, 12, 180, 100);
                     } else {
                         g.drawLine(x + 17, y + 8, x + 17, y + 15);
@@ -248,13 +232,9 @@ public class cmaze {
                     g.drawLine(x + 8, y + 17, x + 17, y + 17);
                     g.drawLine(x + 17, y + 8, x + 17, y + 17);
                 }
-                // Draw upper half segment
                 if (iMaze[row - 1][col] != WALL)
-                    // upper empty
                     if (iMaze[row - 1][col + 1] != WALL)
-                    // upper-right empty
                     {
-                        //						arc(x+16+7,y+7,90,180,6);
                         g.drawArc(x + 16 + 7 - 6, y + 7 - 6, 12, 12, 90, 100);
                     } else {
                         g.drawLine(x + 17, y, x + 17, y + 7);
@@ -266,25 +246,16 @@ public class cmaze {
                 break;
 
             case ctables.UP:
-                // draw left half segment
                 if (iMaze[row][col - 1] != WALL)
-                    // left empty
                     if (iMaze[row - 1][col - 1] != WALL)
-                    // left-upper empty
                     {
-                        //  arc(x+7,y-8,180,270,6);
                         g.drawArc(x + 7 - 6, y - 8 - 6, 12, 12, 180, 100);
                     } else {
                         g.drawLine(x, y - 2, x + 7, y - 2);
                     }
-
-                // Draw right half segment
                 if (iMaze[row][col + 1] != WALL)
-                    // right empty
                     if (iMaze[row - 1][col + 1] != WALL)
-                    // right-upper empty
                     {
-                        //						arc(x+8,y-8,270,0,6);
                         g.drawArc(x + 8 - 6, y - 8 - 6, 12, 12, 270, 100);
                     } else {
                         g.drawLine(x + 8, y - 2, x + 16, y - 2);
@@ -292,25 +263,16 @@ public class cmaze {
                 break;
 
             case ctables.DOWN:
-                // draw left half segment
                 if (iMaze[row][col - 1] != WALL)
-                    // left empty
                     if (iMaze[row + 1][col - 1] != WALL)
-                    // left-down empty
                     {
-                        //						arc(x+7,y+16+7,90,180,6);
                         g.drawArc(x + 7 - 6, y + 16 + 7 - 6, 12, 12, 90, 100);
                     } else {
                         g.drawLine(x, y + 17, x + 7, y + 17);
                     }
-
-                // Draw right half segment
                 if (iMaze[row][col + 1] != WALL)
-                    // right empty
                     if (iMaze[row + 1][col + 1] != WALL)
-                    // right-down empty
                     {
-                        //						arc(x+8,y+16+7,0,90,6);
                         g.drawArc(x + 8 - 6, y + 16 + 7 - 6, 12, 12, 0, 100);
                     } else {
                         g.drawLine(x + 8, y + 17, x + 15, y + 17);

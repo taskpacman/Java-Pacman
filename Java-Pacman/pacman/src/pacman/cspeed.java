@@ -2,15 +2,9 @@
 package pacman;
 
 /**
- * speed control
- * <p/>
- * use init(s,f) to set the frame/step ratio
- * NOTE: s must <= f
- * call start() to reset counters
- * call isMove per frame to see if step are to be taken
+ * контроль скорочти
  */
 public class cspeed {
-    // move steps per frames
     int steps;
     int frames;
 
@@ -36,7 +30,7 @@ public class cspeed {
         frameCount = frames;
     }
 
-    // return 1 if move, 0 not move
+    // возвращает 1 если перемещается, 0 не перемещается
     public int isMove() {
         frameCount--;
 

@@ -12,7 +12,7 @@ public class cghost {
     final int[] steps = {7, 7, 1, 1};
     final int[] frames = {8, 8, 2, 1};
 
-    final int INIT_BLIND_COUNT = 600;    // remain blind for ??? frames
+    final int INIT_BLIND_COUNT = 600;
     int blindCount;
 
     cspeed speed = new cspeed();
@@ -20,18 +20,16 @@ public class cghost {
     int iX, iY, iDir, iStatus;
     int iBlink, iBlindCount;
 
-    // random calculation factors
     final int DIR_FACTOR = 2;
     final int POS_FACTOR = 10;
 
-    // the applet this object is associated to
     Window applet;
     Graphics graphics;
 
-    // the maze the ghosts knows
+    // лабиринт
     cmaze maze;
 
-    // the ghost image
+    // изображение призраков
     Image imageGhost;
     Image imageBlind;
     Image imageEye;
@@ -85,16 +83,16 @@ public class cghost {
                 iBlink = 1;
             if (iBlindCount == 0)
                 iStatus = OUT;
-            if (iBlindCount % 2 == 1)    // blind moves at 1/2 speed
+            if (iBlindCount % 2 == 1)    // уменьньшение скорости в 2 раза у ослепленных призраков
                 return;
         }
 
         if (speed.isMove() == 0)
-            // no move
+            // без перемещения
             return;
 
         if (iX % 16 == 0 && iY % 16 == 0)
-        // determine direction
+        // определить направление
         {
             switch (iStatus) {
                 case IN:
@@ -122,7 +120,7 @@ public class cghost {
     }
 
     public int INSelect()
-        // count available directions
+        // считаем доступные направления
             throws Error {
         int iM, i, iRand;
         int iDirTotal = 0;
@@ -134,7 +132,7 @@ public class cghost {
                 iDirTotal++;
             }
         }
-        // randomly select a direction
+        // случайный выбор направления
         if (iDirTotal != 0) {
             iRand = cuty.RandSelect(iDirTotal);
             if (iRand >= iDirTotal)
@@ -146,7 +144,7 @@ public class cghost {
                 if (iM != cmaze.WALL && i != ctables.iBack[iDir]) {
                     iRand--;
                     if (iRand < 0)
-                    // the right selection
+                    // правильный выбор направления
                     {
                         if (iM == cmaze.DOOR)
                             iStatus = OUT;
@@ -160,7 +158,7 @@ public class cghost {
     }
 
     public int OUTSelect(int iPacX, int iPacY, int iPacDir)
-        // count available directions
+        // счетчик доступных направлений
             throws Error {
         int iM, i, iRand;
         int iDirTotal = 0;
@@ -171,24 +169,24 @@ public class cghost {
             iM = maze.iMaze[iY / 16 + ctables.iYDirection[i]]
                     [iX / 16 + ctables.iXDirection[i]];
             if (iM != cmaze.WALL && i != ctables.iBack[iDir] && iM != cmaze.DOOR)
-            // door is not accessible for OUT
+            // делаем дверь недоступной (в доме призраков)
             {
                 iDirCount[i]++;
                 iDirCount[i] += iDir == iPacDir ?
                         DIR_FACTOR : 0;
                 switch (i) {
-                    case 0:    // right
+                    case 0:    // вправо
                         iDirCount[i] += iPacX > iX ? POS_FACTOR : 0;
                         break;
-                    case 1:    // up
+                    case 1:    // вверх
                         iDirCount[i] += iPacY < iY ?
                                 POS_FACTOR : 0;
                         break;
-                    case 2:    // left
+                    case 2:    // влево
                         iDirCount[i] += iPacX < iX ?
                                 POS_FACTOR : 0;
                         break;
-                    case 3:    // down
+                    case 3:    // вниз
                         iDirCount[i] += iPacY > iY ?
                                 POS_FACTOR : 0;
                         break;
@@ -196,7 +194,7 @@ public class cghost {
                 iDirTotal += iDirCount[i];
             }
         }
-        // randomly select a direction
+        // случайный выбор направления
         if (iDirTotal != 0) {
             iRand = cuty.RandSelect(iDirTotal);
             if (iRand >= iDirTotal)
@@ -208,7 +206,7 @@ public class cghost {
                 if (iM != cmaze.WALL && i != ctables.iBack[iDir] && iM != cmaze.DOOR) {
                     iRand -= iDirCount[i];
                     if (iRand < 0)
-                    // the right selection
+                    // направление вправо
                     {
                         iDir = i;
                         break;
@@ -221,17 +219,16 @@ public class cghost {
         return (iDir);
     }
 
-    public void blind() {
+    public void blind() { //меняем режим преследования
         if (iStatus == BLIND || iStatus == OUT) {
             iStatus = BLIND;
             iBlindCount = blindCount;
             iBlink = 0;
-            // reverse
+            // меняем направления
             if (iX % 16 != 0 || iY % 16 != 0) {
                 iDir = ctables.iBack[iDir];
-                // a special condition:
-                // when ghost is leaving home, it can not go back
-                // while becoming blind
+                // особое состояние:
+                // когда призрак покидает дом, он не может вернуться
                 int iM;
                 iM = maze.iMaze[iY / 16 + ctables.iYDirection[iDir]]
                         [iX / 16 + ctables.iXDirection[iDir]];
@@ -242,7 +239,7 @@ public class cghost {
     }
 
     public int EYESelect()
-        // count available directions
+        // счетчик доступных направлений
             throws Error {
         int iM, i, iRand;
         int iDirTotal = 0;
@@ -255,20 +252,19 @@ public class cghost {
             if (iM != cmaze.WALL && i != ctables.iBack[iDir]) {
                 iDirCount[i]++;
                 switch (i) {
-                    // door position 10,6
-                    case 0:    // right
+                    case 0:    // вправо
                         iDirCount[i] += 160 > iX ?
                                 POS_FACTOR : 0;
                         break;
-                    case 1:    // up
+                    case 1:    // вверх
                         iDirCount[i] += 96 < iY ?
                                 POS_FACTOR : 0;
                         break;
-                    case 2:    // left
+                    case 2:    // влево
                         iDirCount[i] += 160 < iX ?
                                 POS_FACTOR : 0;
                         break;
-                    case 3:    // down
+                    case 3:    // вниз
                         iDirCount[i] += 96 > iY ?
                                 POS_FACTOR : 0;
                         break;
@@ -276,7 +272,7 @@ public class cghost {
                 iDirTotal += iDirCount[i];
             }
         }
-        // randomly select a direction
+        // случайный выбор направления
         if (iDirTotal != 0) {
             iRand = cuty.RandSelect(iDirTotal);
             if (iRand >= iDirTotal)
@@ -288,7 +284,7 @@ public class cghost {
                 if (iM != cmaze.WALL && i != ctables.iBack[iDir]) {
                     iRand -= iDirCount[i];
                     if (iRand < 0)
-                    // the right selection
+                    // выбор направления вправо
                     {
                         if (iM == cmaze.DOOR)
                             iStatus = IN;
@@ -303,7 +299,7 @@ public class cghost {
     }
 
     public int BLINDSelect(int iPacX, int iPacY, int iPacDir)
-        // count available directions
+        // счетчик направлений
             throws Error {
         int iM, i, iRand;
         int iDirTotal = 0;
@@ -313,25 +309,25 @@ public class cghost {
             iDirCount[i] = 0;
             iM = maze.iMaze[iY / 16 + ctables.iYDirection[i]][iX / 16 + ctables.iXDirection[i]];
             if (iM != cmaze.WALL && i != ctables.iBack[iDir] && iM != cmaze.DOOR)
-            // door is not accessible for OUT
+            // дверь недоступна для входа
             {
                 iDirCount[i]++;
                 iDirCount[i] += iDir == iPacDir ?
                         DIR_FACTOR : 0;
                 switch (i) {
-                    case 0:    // right
+                    case 0:    // вправо
                         iDirCount[i] += iPacX < iX ?
                                 POS_FACTOR : 0;
                         break;
-                    case 1:    // up
+                    case 1:    // вверх
                         iDirCount[i] += iPacY > iY ?
                                 POS_FACTOR : 0;
                         break;
-                    case 2:    // left
+                    case 2:    // влево
                         iDirCount[i] += iPacX > iX ?
                                 POS_FACTOR : 0;
                         break;
-                    case 3:    // down
+                    case 3:    // вниз
                         iDirCount[i] += iPacY < iY ?
                                 POS_FACTOR : 0;
                         break;
@@ -339,7 +335,7 @@ public class cghost {
                 iDirTotal += iDirCount[i];
             }
         }
-        // randomly select a direction
+        // случайный выбор движения
         if (iDirTotal != 0) {
             iRand = cuty.RandSelect(iDirTotal);
             if (iRand >= iDirTotal)
@@ -351,7 +347,7 @@ public class cghost {
                 if (iM != cmaze.WALL && i != ctables.iBack[iDir]) {
                     iRand -= iDirCount[i];
                     if (iRand < 0)
-                    // the right selection
+                    // правильный выбор
                     {
                         iDir = i;
                         break;
@@ -363,8 +359,8 @@ public class cghost {
         return (iDir);
     }
 
-    // return 1 if caught the pac!
-    // return 2 if being caught by pac
+    // возвращает 1 если поймают пакмана
+    // возвращает 2 если пойманы пакманом
     int testCollision(int iPacX, int iPacY) {
         if (iX <= iPacX + 2 && iX >= iPacX - 2
                 && iY <= iPacY + 2 && iY >= iPacY - 2) {
@@ -378,7 +374,6 @@ public class cghost {
                     return (2);
             }
         }
-        // nothing
         return (0);
     }
 }

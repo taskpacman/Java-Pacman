@@ -14,17 +14,15 @@ public class cpowerdot {
 
     int iValid[];
 
-    // the applet this object is associated to
     Window applet;
     Graphics graphics;
 
-    // the ghosts it controls
     cghost[] ghosts;
 
-    // the power dot image
+    // изображение точки
     Image imagePowerDot;
 
-    // the blank image
+    // пустое изображение
     Image imageBlank;
 
     cpowerdot(Window a, Graphics g, cghost[] gh) {
@@ -32,7 +30,7 @@ public class cpowerdot {
         graphics = g;
         ghosts = gh;
 
-        // initialize power dot	and image
+        // инициализация энерджайзера
         iValid = new int[4];
 
         imagePowerDot = applet.createImage(16, 16);
@@ -44,11 +42,11 @@ public class cpowerdot {
         imageG.fillRect(0, 0, 16, 16);
 
         frameCount = iShowCount;
-        showStatus = 1;    // show
+        showStatus = 1;
     }
 
     public void start() {
-        // all power dots available
+        // включаем все энерджайзеры
         for (int i = 0; i < 4; i++)
             iValid[i] = 1;
     }

@@ -2,25 +2,17 @@ package pacman;
 
 /**
  * cpacmove.java
- * calculate the move for pac
- * this is used for machine controlled pac
- * for demonstration or else...
+ * вычисляет перемещения пакмана(для призраков
  */
 class cpacmove {
-    // things that affect the decision:
-    // ghosts status
-    //   ghosts position
-    //   ghosts movement direction
-    // dots position
-    //   ONLY the closest dot is goal
-    // powerdot position
-    //   the closer the ghosts, more weight to go to powerdot
+    // Вещи, которые влияют на решения:
+    // статус призраков
+    // позиция призраков
+    // направление движения призраков
+    // позиция точек
+    // позиция энерджайзеров
+    // чем ближе призраки, больше веса, чтобы перейти к энерджайзеру
 
-    // direction score
-    // each represents the score for that direction
-    // the direction with the highest score will be chosen
-    // if the chosen one is not available, the oposite score will be subtracted,
-    //   and the rest compared again.
     int iDirScore[];
 
     int iValid[];
@@ -46,21 +38,16 @@ class cpacmove {
             throws Error {
         int i;
 
-        // first, init to 0
         for (i = 0; i < 4; i++)
             iDirScore[i] = 0;
 
-        // add score for dot
         AddDotScore();
 
-        // add score for ghosts
         AddGhostScore();
 
-        // add score for powerdot
         AddPowerDotScore();
 
-        // determine the direction based on scores
-
+        // определяет направление на основе очков
         for (i = 0; i < 4; i++)
             iValid[i] = 1;
 
@@ -88,20 +75,16 @@ class cpacmove {
                 return (iHDir);
 
             iValid[iHDir] = 0;
-            //			iDirScore[ctables.iBack[iHDir]] = iDirScore[iHDir];
-
         }
-
-        //	return(iHDir);  // will not reach here, ordered by javac
     }
 
     void AddGhostScore() {
-        int iXDis, iYDis;    // distance
-        double iDis;        // distance
+        int iXDis, iYDis;    // дистанция
+        double iDis;        // дистанция
 
         int iXFact, iYFact;
 
-        // calculate ghosts one by one
+        // расчет призраков по одному
         for (int i = 0; i < 4; i++) {
             iXDis = cGhost[i].iX - cPac.iX;
             iYDis = cGhost[i].iY - cPac.iY;
@@ -112,8 +95,6 @@ class cpacmove {
 
 
             } else {
-                // adjust iDis into decision factor
-
                 iDis = 18 * 13 / iDis / iDis;
                 iXFact = (int) (iDis * iXDis);
                 iYFact = (int) (iDis * iYDis);
@@ -142,7 +123,7 @@ class cpacmove {
 
         dShortest = 1000;
 
-        // find the nearest dot
+        // поиск ближайшей точки
         for (i = 0; i < cmaze.HEIGHT; i++)
             for (j = 0; j < cmaze.WIDTH; j++) {
                 if (cMaze.iMaze[i][j] == cmaze.DOT) {
@@ -159,7 +140,6 @@ class cpacmove {
                 }
             }
 
-        // now iX and iY is the goal (relative position)
 
         int iFact = 100000;
 

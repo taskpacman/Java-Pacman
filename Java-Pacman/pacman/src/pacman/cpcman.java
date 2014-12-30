@@ -7,71 +7,66 @@ import java.awt.event.*;
 public class cpcman extends Frame
         implements Runnable, KeyListener, ActionListener, WindowListener {
     private static final long serialVersionUID = 3582431359568375379L;
-    // the timer
+    // таймер
     Thread timer;
-    int timerPeriod = 12;  // in miliseconds
-
-    // the timer will increment this variable to signal a frame
+    int timerPeriod = 12;  // в милисекундах
     int signalMove = 0;
 
-    // for graphics
+    // для графики
     final int canvasWidth = 368;
     final int canvasHeight = 288 + 1;
 
-    // the canvas starting point within the frame
+    // рисование канвы
     int topOffset;
     int leftOffset;
 
-    // the draw point of maze within the canvas
+    // размер лабиринта
     final int iMazeX = 16;
     final int iMazeY = 16;
 
-    // the off screen canvas for the maze
     Image offScreen;
     Graphics offScreenG;
 
-    // the objects
+    // объекты
     cmaze maze;
     cpac pac;
     cpowerdot powerDot;
     cghost[] ghosts;
 
-    // game counters
+    // счетчик жизней пака
     final int PAcLIVE = 3;
     int pacRemain;
-    int changePacRemain;  // to signal redraw remaining pac
+    int changePacRemain;
 
-    // score
+    // очки
     int score;
     int hiScore;
-    int scoreGhost;    // score of eat ghost, doubles every time
-    int changeScore;    // signal score change
-    int changeHiScore;  // signal change of hi score
+    int scoreGhost;    // очки за съедение призрака
+    int changeScore;    // меняет очки на экране
+    int changeHiScore;  // меняет hiscore на экране
 
-    // score images
+    // изображение очков
     Image imgScore;
     Graphics imgScoreG;
     Image imgHiScore;
     Graphics imgHiScoreG;
 
-    // game status
-    final int INITIMAGE = 100;  // need to wait before paint anything
-    final int STARTWAIT = 0;  // wait before running
+    // статус игры
+    final int INITIMAGE = 100;
+    final int STARTWAIT = 0;  //задержка до старта
     final int RUNNING = 1;
-    final int DEADWAIT = 2;   // wait after dead
-    final int SUSPENDED = 3;  // suspended during game
+    final int DEADWAIT = 2;   // задержка после смерти
+    final int SUSPENDED = 3;
     int gameState;
 
-    final int WAITCOUNT = 100;    // 100 frames for wait states
-    int wait;    // the counter
+    final int WAITCOUNT = 100;
+    int wait;
 
-    // rounds
-    int round;  // the round of current game;
-
-    // whether it is played in a new maze
+    // раунды
+    int round;
     boolean newMaze;
 
-    // GUIs
+    // менюшки
     MenuBar menuBar;
     Menu help;
     MenuItem about;
@@ -80,17 +75,13 @@ public class cpcman extends Frame
     int pacKeyDir;
     int key = 0;
     final int NONE = 0;
-    final int SUSPEND = 1;  // stop/start
-    final int BOSS = 2;      // boss
+    final int SUSPEND = 1;  // стоп/старт
+    final int BOSS = 2;      // босс
 
-    ////////////////////////////////////////////////
-    // initialize the object
-    // only called once at the beginning
-    ////////////////////////////////////////////////
+
     public cpcman() {
-        super("P*C MAN");
+        super("PACMAN");
 
-        // init variables
         hiScore = 0;
 
         gameState = INITIMAGE;
@@ -118,22 +109,22 @@ public class cpcman extends Frame
 
         setMenuBar(menuBar);
 
-        addNotify();  // for updated inset information
+        addNotify();
 
     }
 
     public void initImages() {
-        // initialize off screen drawing canvas
+        //создаие канвы
         offScreen = createImage(cmaze.iWidth, cmaze.iHeight);
         if (offScreen == null)
             System.out.println("createImage failed");
         offScreenG = offScreen.getGraphics();
 
-        // initialize maze object
+        // инициализация лабиринта
         maze = new cmaze(this, offScreenG);
 
-        // initialize ghosts object
-        // 4 ghosts
+        // инициализация призраков
+        // 4 призрака
         ghosts = new cghost[4];
         for (int i = 0; i < 4; i++) {
             Color color;
@@ -148,14 +139,13 @@ public class cpcman extends Frame
             ghosts[i] = new cghost(this, offScreenG, maze, color);
         }
 
-        // initialize power dot object
+        // инициализация энерджайзера
         powerDot = new cpowerdot(this, offScreenG, ghosts);
 
-        // initialize pac object
-        //      	pac = new cpac(this, offScreenG, maze, powerDot, ghosts);
+        // инициализация пакмана
         pac = new cpac(this, offScreenG, maze, powerDot);
 
-        // initialize the score images
+        // инициалиалазация очков
         imgScore = createImage(150, 16);
         imgScoreG = imgScore.getGraphics();
         imgHiScore = createImage(150, 16);
@@ -175,11 +165,12 @@ public class cpcman extends Frame
     }
 
     void startTimer() {
-        // start the timer
+        // запуск таймера
         timer = new Thread(this);
         timer.start();
     }
 
+    //старт игры
     void startGame() {
         pacRemain = PAcLIVE;
         changePacRemain = 1;
@@ -195,14 +186,13 @@ public class cpcman extends Frame
     }
 
     void startRound() {
-        // new round for maze?
         if (newMaze == true) {
             maze.start();
             powerDot.start();
             newMaze = false;
         }
 
-        maze.draw();    // draw maze in off screen buffer
+        maze.draw();    // рисование лабиринта
 
         pac.start();
         pacKeyDir = ctables.DOWN;
@@ -214,32 +204,22 @@ public class cpcman extends Frame
     }
 
     ///////////////////////////////////////////
-    // paint everything
+    // рисование всего
     ///////////////////////////////////////////
     public void paint(Graphics g) {
         if (gameState == INITIMAGE) {
-            // System.out.println("first paint(...)...");
-
-            // init images, must be done after show() because of Graphics
             initImages();
-
-            // set the proper size of canvas
             Insets insets = getInsets();
 
             topOffset = insets.top;
             leftOffset = insets.left;
-
-            //  System.out.println(topOffset);
-            //  System.out.println(leftOffset);
 
             setSize(canvasWidth + insets.left + insets.right,
                     canvasHeight + insets.top + insets.bottom);
 
             setResizable(false);
 
-            // now we can start timer
             startGame();
-
             startTimer();
 
         }
@@ -255,20 +235,16 @@ public class cpcman extends Frame
     }
 
     void paintUpdate(Graphics g) {
-        // updating the frame
-
         powerDot.draw();
 
         for (int i = 0; i < 4; i++)
             ghosts[i].draw();
 
         pac.draw();
-
-        // display the offscreen
         g.drawImage(offScreen,
                 iMazeX + leftOffset, iMazeY + topOffset, this);
 
-        // display extra information
+        // инфа на экране
         if (changeHiScore == 1) {
             imgHiScoreG.setColor(Color.black);
             imgHiScoreG.fillRect(70, 0, 80, 16);
@@ -291,7 +267,7 @@ public class cpcman extends Frame
             changeScore = 0;
         }
 
-        // update pac life info
+        // обновление  пака
         if (changePacRemain == 1) {
             int i;
             for (i = 1; i < pacRemain; i++) {
@@ -308,8 +284,8 @@ public class cpcman extends Frame
     }
 
     ////////////////////////////////////////////////////////////
-    // controls moves
-    // this is the routine running at the background of drawings
+    // контроль движений
+    // выполняется в фоне
     ////////////////////////////////////////////////////////////
     void move() {
         int k;
@@ -321,11 +297,11 @@ public class cpcman extends Frame
 
         k = pac.move(pacKeyDir);
 
-        if (k == 1)    // eaten a dot
+        if (k == 1)    // съел точку
         {
             changeScore = 1;
             score += 10 * ((round + 1) / 2);
-        } else if (k == 2)    // eaten a powerDot
+        } else if (k == 2)    // съел энерджайзер
         {
             scoreGhost = 200;
         }
@@ -340,14 +316,14 @@ public class cpcman extends Frame
 
         for (int i = 0; i < 4; i++) {
             k = ghosts[i].testCollision(pac.iX, pac.iY);
-            if (k == 1)    // kill pac
+            if (k == 1)    // пакмана съели
             {
                 pacRemain--;
                 changePacRemain = 1;
-                gameState = DEADWAIT;    // stop the game
+                gameState = DEADWAIT;    // оставка игры
                 wait = WAITCOUNT;
                 return;
-            } else if (k == 2)    // caught by pac
+            } else if (k == 2)    // съеден паком
             {
                 score += scoreGhost * ((round + 1) / 2);
                 changeScore = 1;
@@ -362,23 +338,18 @@ public class cpcman extends Frame
 
         if (changeScore == 1) {
             if (score / 10000 - oldScore / 10000 > 0) {
-                pacRemain++;            // bonus
+                pacRemain++;            //бонус
                 changePacRemain = 1;
             }
         }
     }
 
-    ///////////////////////////////////////////
-    // this is the routine draw each frames
-    ///////////////////////////////////////////
+
     public void update(Graphics g) {
-        // System.out.println("update called");
         if (gameState == INITIMAGE)
             return;
 
-        // seperate the timer from update
         if (signalMove != 0) {
-            // System.out.println("update by timer");
             signalMove = 0;
 
             if (wait != 0) {
@@ -388,7 +359,7 @@ public class cpcman extends Frame
 
             switch (gameState) {
                 case STARTWAIT:
-                    if (pacKeyDir == ctables.UP)    // the key to start game
+                    if (pacKeyDir == ctables.UP)    // кнопка начала игры
                         gameState = RUNNING;
                     else
                         return;
@@ -420,7 +391,7 @@ public class cpcman extends Frame
     }
 
     ///////////////////////////////////////
-    // process key input
+    // обработка кнопок с клавы
     ///////////////////////////////////////
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
@@ -457,7 +428,7 @@ public class cpcman extends Frame
     }
 
     /////////////////////////////////////////////////
-    // handles menu event
+    // меню about
     /////////////////////////////////////////////////
     public void actionPerformed(ActionEvent e) {
         if (gameState == RUNNING)
@@ -466,9 +437,7 @@ public class cpcman extends Frame
         // e.consume();
     }
 
-    ///////////////////////////////////////////////////
-    // handles window event
-    ///////////////////////////////////////////////////
+
     public void windowOpened(WindowEvent e) {
     }
 
@@ -492,7 +461,7 @@ public class cpcman extends Frame
     }
 
     /////////////////////////////////////////////////
-    // the timer
+    // таймер
     /////////////////////////////////////////////////
     public void run() {
         while (true) {
@@ -507,20 +476,14 @@ public class cpcman extends Frame
         }
     }
 
-    // for applet the check state
     boolean finalized = false;
 
     public void dispose() {
-        //      timer.stop();	// deprecated
-        // kill the thread
         timer.interrupt();
 
-        // the off screen canvas
-//		Image offScreen=null;
         offScreenG.dispose();
         offScreenG = null;
 
-        // the objects
         maze = null;
         pac = null;
         powerDot = null;
@@ -528,7 +491,7 @@ public class cpcman extends Frame
             ghosts[i] = null;
         ghosts = null;
 
-        // score images
+        // очки
         imgScore = null;
         imgHiScore = null;
         imgScoreG.dispose();
